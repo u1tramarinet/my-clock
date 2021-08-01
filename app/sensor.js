@@ -5,6 +5,7 @@ import { me as appbit } from "appbit";
 
 const hrsEnabled = Boolean(appbit.permissions.granted("access_heart_rate") && HeartRateSensor);
 const brEnabled = Boolean(BodyPresenceSensor);
+const aodEnabled = Boolean(display.aodAvailable && appbit.permissions.granted("access_aod"));
 
 export let onHeartRateChanged, onDisplayStateChanged;
 
@@ -13,6 +14,7 @@ let hrs, body;
 export function initialize() {
   console.log("hrsEnabled=" + hrsEnabled);
   console.log("brEnabled=" + brEnabled);
+  console.log("aodEnabled=" + aodEnabled + ", aodAvailable=" + display.aodAvailable + ", access_aod=" + appbit.permissions.granted("access_aod"));
   if (hrsEnabled) {
     hrs = new HeartRateSensor();
     hrs.onreading = () => {
@@ -29,10 +31,13 @@ export function initialize() {
     }
     body.start();
   }
+  if (aodEnabled) {
+    display.aodAllowed = true;
+  }
   display.onchange = () => {
     console.log("display.onchange() on=" + display.on);
     updateHrsActivated();
-    onDisplayStateChanged(display.on);
+    onDisplayStateChanged(!display.aodActive && display.on);
     console.log("display.onchange() aod=" + display.aodActive);
   }
 }
