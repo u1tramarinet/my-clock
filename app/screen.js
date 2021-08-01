@@ -1,5 +1,5 @@
 import document from "document";
-import { preferences } from "user-settings";
+import { preferences, locale } from "user-settings";
 import * as util from "../common/utils";
 
 const monthText = document.getElementById("month-text");
@@ -42,9 +42,9 @@ export function updateDateAndTime(today) {
 }
 
 function updateDate(today) {
-  let month = today.getMonth() + 1;
-  let day = today.getDate();
-  let dayOfWeek = "日月火水木金土".charAt(today.getDay());
+  let month = util.convertToMonoDigits((today.getMonth() + 1), false);
+  let day = util.convertToMonoDigits(today.getDate(), false);
+  let dayOfWeek = util.convertToDayOfWeek(today.getDay(), locale.language);
   monthText.text = month;
   dayText.text = day;
   dayOfWeekText.text = dayOfWeek;
@@ -55,9 +55,9 @@ function updateDigitalTime(today) {
   if (preferences.clockDisplay === "12h") {
     hours = hours % 12;
   }
-  hours = util.fillZero(hours);
-  let minutes = util.fillZero(today.getMinutes());
-  let seconds = util.fillZero(today.getSeconds());
+  hours = util.convertToMonoDigits(hours);
+  let minutes = util.convertToMonoDigits(today.getMinutes());
+  let seconds = util.convertToMonoDigits(today.getSeconds());
   hourText.text = hours;
   hourBackText.text = hours;
   minuteText.text = minutes;
@@ -75,18 +75,19 @@ function updateAnalogTime(today) {
 }
 
 export function updateHeartRate(heartRate) {
-  heartRateValue.text = heartRate;
+  heartRateValue.text = util.convertToMonoDigits(heartRate, false);
 }
 
 export function updateSteps(steps) {
-  stepsValue.text = steps.toLocaleString();
-  stepsUnit.text = (steps > 1) ? "Steps" : Step;
+  stepsValue.text = util.convertToMonoDigits(steps.toLocaleString(), false);
+  stepsUnit.text = util.getStepUnit(steps, locale.language);
 }
 
 export function updateBattery(battery, charging) {
   console.log("updateBattery() value=" + battery + ", charging=" + charging)
-  batteryValue.text = battery + "%";
+  batteryValue.text = util.convertToMonoDigits(battery, false) + "%";
   batteryValue.style.fill = charging ? "lime" : "white";
+  batteryCharging.text = util.getBatteryUnit(locale.language);
   batteryCharging.style.fill = charging ? "lime" : "#00000000";
 }
 

@@ -20,5 +20,6 @@ sensor.onHeartRateChanged = (heartRate) => {
   screen.updateHeartRate(heartRate);
 }
 sensor.onDisplayStateChanged = (on) => {
-  screen.updateScreen(on)
+  screen.updateScreen(on);
+  clock.granularity = (on) ? "seconds" : "minutes";
 }
